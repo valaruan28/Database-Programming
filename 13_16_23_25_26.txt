@@ -1,0 +1,183 @@
+1. Halaman 5 : 
+SELECT table_name, owner
+FROM all_tables
+WHERE table_name LIKE'JO%'
+
+2. Halaman 6 : 
+SELECT SUBSTR(first_name,1,1) 
+|| ' ' || last_name 
+FROM employees ;
+
+3. Halaman 7 : 
+SELECT first_name ||' ' || last_name, 
+email 
+FROM employees
+WHERE email LIKE'%IN%';
+
+4. Halaman 8 : 
+SELECT 
+MIN(last_name) AS "First Last Name", 
+MAX(last_name) AS "Last Last Name"
+FROM employees
+
+5. Halaman 9 : 
+SELECT TO_CHAR(ROUND(salary/4.2),
+('$99999.00'))
+AS "Weekly Salary"
+FROM employees
+WHERE salary BETWEEN 700 AND 3000
+
+6. Halaman 10 : 
+SELECT 
+SUBSTR(employees.first_name,1,1) 
+|| ' ' || 
+employees.last_name "Employee Name", 
+jobs.job_title "Jobs"
+FROM employees, jobs
+WHERE employees.job_id = jobs.job_id;
+
+7. Halaman 11 :
+SELECT 
+SUBSTR(employees.first_name,1,1) 
+|| ' ' || 
+employees.last_name "Employee Name", 
+jobs.job_title "Jobs",
+MIN_SALARY ||'-'|| MAX_SALARY 
+"Salary Range",
+employees.salary "Employee's Salary"
+FROM employees, jobs
+WHERE employees.job_id = jobs.job_id;
+
+8. Halaman 12 :
+SELECT SUBSTR(first_name,1,1) ||''|| last_name "Employee Name", department_name
+FROM employees NATURAL JOIN departments;
+
+9. Halaman 13 :
+SELECT SUBSTR(first_name,1,1) 
+||''|| 
+last_name "Employee Name",
+department_name "Department Name" 
+FROM employees e JOIN departments d 
+ON  (e.department_id = d.department_id);
+
+10. Halaman 14 :
+SELECT DECODE (manager_id, null,'Nobody', 'Somebody')"Works For", last_name"Last Name"
+FROM employees;
+
+11. Halaman 15 : 
+SELECT SUBSTR(first_name, 1,1)||''||
+ last_name "Employee Name", salary 
+"salary", 
+DECODE (commission_pct,null,'No','Yes') 
+commission FROM employees;
+
+12. Halaman 16 :
+SELECT E.last_name, D.department_name, L.city, L.state_province
+FROM employees E JOIN departments D ON E.department_id = D.department_id 
+JOIN locations L ON D.location_id = L.location_id ORDER BY E.last_name;
+
+13. Halaman 17 :
+SELECT first_name "First Name", last_name "LastName", 
+COALESCE(commission_pct, manager_id, 
+commission_pct,-1) AS "Which Function???" FROM employees;
+
+14. Halaman 18 :
+SELECT e.last_name, e.salary, j.grade_level
+FROM employees e
+JOIN job_grades j
+ON e.salary BETWEEN j.lowest_sal AND j.highest_sal
+WHERE e.department_id > 50
+ORDER BY j.grade_level;
+
+15. Halaman 19 :
+SELECT E.last_name,D.department_name FROM employees E JOIN departments D ON
+E.department_id = D.department_id;
+
+16. Halaman 20 :
+SELECT LEVEL AS "POSITION", last_name, PRIOR last_name AS "MANAGER_NAME"
+FROM employees
+START WITH employee_id = 100
+CONNECT BY PRIOR employee_id = manager_id;
+
+17. Halaman 21 :
+SELECT MAX(hire_date) AS "Highest", MIN(hire_date) AS "Lowest",
+COUNT(last_name) AS "No of Employees"
+FROM employees;
+
+18. Halaman 22 :
+select department_name, salary as Salaries
+from departments, employees
+where salary >= 15000 and salary <= 31000
+order by salary
+
+19. Halaman 23 :
+select d.department_name,d.manager_id,e.last_name as manager_name, avg(salary) as
+avg_dept_salary
+from departments d
+join employees e
+on e.employess_id = d.manager_id
+group by d.department_name, e.last_name,d.manager_id;
+
+20. Halaman 24 :
+select round(max(avg_sal)) as "Highest Avg Sal for Depts"
+from (select department_id, avg(salary) as avg_sal
+from employees
+group by department_id;
+
+21. Halaman 25 :
+select department_name as "Department Name", month_salary as "Monthly cost"
+from employees
+group by department_id) e
+where d.department_id = e.department_id;
+
+22. Halaman 26:
+SELECT department_name AS "Department Name",
+job_id AS "Job Title", SUM(salary) AS "Monthly Cost"
+FROM employees JOIN departments
+ON employees.department_id = departments.department_id
+GROUP BY ROLLUP(department_name, job_id)
+ORDER BY department_name;
+
+23. Halaman 27 :
+SELECT department_name AS "Department Name",
+job_id AS "Job Title", SUM(salary) AS "Monthly Cost"
+FROM employees JOIN departments
+ON employees.department_id = departments.department_id
+GROUP BY CUBE(department_name, job_id)
+ORDER BY department_name;
+
+24. Halaman 28 :
+SELECT department_name AS "Department Name",
+job_id AS "Job Title",
+SUM(salary) AS "Monthly Cost",
+DECODE(GROUPING(departments.department_id), 0, 'Yes', 'No') AS "Department ID Used",
+DECODE(GROUPING(job_id), 0, 'Yes', 'No') AS "Job ID Used"
+FROM employees JOIN departments
+ON employees.department_id = departments.department_id
+GROUP BY CUBE(departments.department_name, departments.department_id, job_id)
+ORDER BY department_name;
+
+25. Halaman 29:
+SELECT NULL AS department_name, job_id, NULL AS city, SUM(salary)
+FROM employees
+GROUP BY job_id
+UNION ALL
+SELECT department_name, NULL, NULL, NULL
+FROM departments
+UNION ALL
+SELECT NULL, NULL, city, NULL
+FROM locations;
+
+26. Halaman 30 :
+SELECT SUBSTR(employees.first_name,1,1) || ' ' || employees.last_name AS "Employee Name", departments.department_id, departments.department_name, locations.city
+FROM employees, departments, locations
+WHERE employees.DEPARTMENT_ID = departments.DEPARTMENT_ID
+GROUP BY GROUPING SETS
+((SUBSTR(employees.first_name,1,1) || ' ' || employees.last_name, departments.department_id), (departments.department_id, departments.department_name),(locations.city, NULL))
+ORDER BY SUBSTR(employees.first_name,1,1) || ' ' || employees.last_name, departments.DEPARTMENT_ID, departments.DEPARTMENT_NAME, locations.city;
+
+27. Halaman 31 :
+SELECT SUBSTR(e.first_name,1,1)||' '||e.last_name AS "Employee", e.salary AS "Salary", d.department_name AS "Department Name"
+FROM employees e, departments d
+WHERE e.salary > (SELECT AVG(salary)FROM employees) 
+AND e.department_id = d.department_id;
