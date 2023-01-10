@@ -1,2 +1,2 @@
 # Database-Programming
-In this repository, there are some queries database programming exercise with SQL 
+In this repository, there are some my queries database programming exercise with SQL 
